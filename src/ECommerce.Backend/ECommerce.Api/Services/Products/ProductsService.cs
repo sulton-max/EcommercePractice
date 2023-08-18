@@ -1,27 +1,12 @@
 ﻿using ECommerce.Api.Data.DataContexts;
 using ECommerce.Api.Models.Common;
+using ECommerce.Api.Models.Entities;
 
 namespace ECommerce.Api.Services.Products;
 
 public class ProductsService : IProductsService
 {
     private readonly AppDataContext _appDataContext;
-
-    // public List<IProduct> Products
-    // {
-    //     get
-    //     {
-    //         var list = new List<IProduct>();
-    //         list.AddRange(_appDataContext.Laptops.OfType<IProduct>());
-    //         list.AddRange(_appDataContext.Phones.OfType<IProduct>());
-    //
-    //         // _appDataContext.Laptops.Cast<IProduct>().Concat(_appDataContext.Phones);
-    //
-    //         // list.AddRange();
-    //
-    //         return list;
-    //     }
-    // }
 
     public ProductsService(AppDataContext appDataContext)
     {
@@ -30,32 +15,75 @@ public class ProductsService : IProductsService
 
     public IEnumerable<IProduct> GetAll()
     {
-        return _appDataContext.Phones;
-        // return Products.ToList();
+        return _appDataContext.Phones.Cast<IProduct>().Concat(_appDataContext.Laptops);
     }
 
     public IProduct? Add(IProduct product)
     {
-        throw new NotImplementedException();
+        if (product is Phone phone)
+        {
+            _appDataContext.Phones.Add(phone);
+            return phone;
+        }
+
+        if (product is Laptop laptop)
+        {
+            _appDataContext.Laptops.Add(laptop);
+            return laptop;
+        }
+
+        return null;
     }
 
     public IProduct? GetById(Guid id)
     {
-        throw new NotImplementedException();
+        return GetAll().FirstOrDefault(item => item.Id == id);
     }
 
     public IProduct? Update(IProduct product)
     {
-        throw new NotImplementedException();
-    }
+        if (product is Phone phone)
+        {
+            var foundPhone = _appDataContext.Phones.FirstOrDefault(item => item.Id == phone.Id);
+            if (foundPhone is null)
+                return null;
 
-    public bool Delete(IProduct product)
-    {
-        throw new NotImplementedException();
+            foundPhone.Name = phone.Name;
+            foundPhone.Price = phone.Price;
+            foundPhone.ImageUrl = phone.ImageUrl;
+
+            return foundPhone;
+        }
+
+        if (product is Laptop laptop)
+        {
+            var foundPhone = _appDataContext.Laptops.FirstOrDefault(item => item.Id == laptop.Id);
+            if (foundPhone is null)
+                return null;
+
+            foundPhone.Name = laptop.Name;
+            foundPhone.Price = laptop.Price;
+            foundPhone.ImageUrl = laptop.ImageUrl;
+
+            return foundPhone;
+        }
+
+        return null;
     }
 
     public bool Delete(Guid id)
     {
-        throw new NotImplementedException();
+        var foundProduct = GetById(id);
+
+        if (foundProduct is null)
+            return false;
+
+        if (foundProduct is Phone phone)
+            return _appDataContext.Phones.RemoveAll(item => item.Id == phone.Id) > 0;
+
+        if (foundProduct is Laptop laptop)
+            return _appDataContext.Phones.RemoveAll(item => item.Id == laptop.Id) > 0;
+
+        return false;
     }
 }

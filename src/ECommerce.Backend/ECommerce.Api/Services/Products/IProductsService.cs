@@ -12,6 +12,5 @@ public interface IProductsService
 
     IProduct? Update(IProduct product);
 
-    bool Delete(IProduct product);
     bool Delete(Guid id);
 }
