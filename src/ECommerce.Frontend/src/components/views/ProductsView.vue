@@ -1,10 +1,8 @@
 <template>
 
   <div class="h-full w-full flex items-center justify-center">
-    <div class="md:container p-5">
-
-
-
+    <div>
+      <product-grid products="products"></product-grid>
     </div>
   </div>
 
@@ -15,6 +13,7 @@
 import {reactive, ref} from "vue";
 import type {IProduct} from "@/models/IProduct";
 import {Guid} from "guid-typescript";
+import ProductGrid from "@/components/grids/ProductGrid.vue";
 
 const isLogin = ref(true);
 
